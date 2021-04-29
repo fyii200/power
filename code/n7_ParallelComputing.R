@@ -9,7 +9,7 @@ registerDoParallel(3) #set number of cores (4 on my mac)
 # install.packages('cachem')
 library(cachem)
 
-d <- read.csv('data/power.csv')
+d <- read.csv('data/power.csv')       #  read the "stamps" data
 d <- d[,-1]
 
 #install latest version of visualFields
@@ -26,9 +26,9 @@ library('RColorBrewer')
 pe <- data.frame(no=1:4950, id=0, l1=0, l2=0, l3=0, l4=0, l5=0, 
                  slope=0.002*2^seq(1,11,1)*54/5, pow=0)
 
-pe$no <- 1:11
-pe$idx <- 1:165
-for(i in 1:30) { pe[which(pe$idx==1)[i]:which(pe$idx==165)[i],]$id <- i }
+pe$no <- 1:11        # rep( 1: 11, 3)
+pe$idx <- 1:165      # ditto
+for(i in 1:30) { pe[which(pe$idx==1)[i]:which(pe$idx==165)[i],]$id <- i }    #
 pe <- pe[,-10]
 
 #configure data frame d
@@ -48,7 +48,7 @@ for (i in 23) {
   
   a <- d[which(d$id==unique(d$id)[i]),]
   
-  if(mean(apply(a[,-c(1:10,36,45)],2,mean) > 10)*52 > 8){
+  if(mean(apply(a[,-c(1:10,36,45)],2,mean) > 10)*52 > 8){     # check that ....
     #Empty plot for each px
     plot(0,0,bty='n', pch=19, cex=0.4, ylim=c(0,1), xlim=c(min(unique(pe$slope))*5/54+0.008, max(unique(pe$slope))*5/54-2), 
          type='n', ylab='Power', xlab='Rate (dB/y)', log='x', main=paste0('Px ', unique(pe$id)[i]), xaxt='n')
@@ -75,7 +75,7 @@ for (i in 23) {
         a <- a[sample(1:7, 7, replace=FALSE),] #random reordering (rows)
         for (q in 1:6) { a$date[q+1] <- d$date[1] + 180*q } #chg date intervals to 6mths
         
-        dat[which(dat$rate==0.0432)[o]: which(dat$rate==44.2368)[o],]$p <-
+        dat[which(dat$rate==0.0432)[o]: which(dat$rate==44.2368)[o],]$p <-    # please comment
           foreach (s = 1:11, .combine='c') %dopar% {
             prog <- a
             for (j in 2:7){ prog[j,neg] <- a[j,neg] - unique(pe$slope)[s]*(j-1)/2 }  #inject progression
