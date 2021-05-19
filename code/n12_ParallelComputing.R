@@ -8,7 +8,6 @@ library(doParallel)
 registerDoParallel(3) #set number of cores (4 on my mac)
 # install.packages('cachem')
 library(cachem)
-Sys.setenv(TZ='GMT')
 
 d <- read.csv('data/power.csv')
 d <- d[,-1]
@@ -45,7 +44,7 @@ set.seed(18143) # from px 1 to 10
 # set.seed(14325) # from px 11 to 20
 # set.seed(18135) # from px 21 to 30
 
-for (i in 1:2) {
+for (i in 1) {
   
   a <- d[which(d$id==unique(d$id)[i]),]
   

@@ -1,0 +1,215 @@
+---
+# latex commands: '|' for line breaks; '\vspace' to define vertical spacing (- to reduce
+# vertical spacing); '\hspace' do the same for horizontal spacing; '\ footnotesize' shrinks
+# the text; '\qquad' adds spacing between text so does '\' but to a smaller degree
+
+title: |
+    | \huge \vspace{-2.5cm} \hspace{-7cm} **Serial Visual Fields Report**
+    | \footnotesize \vspace{0.2cm} \hspace{-8.3cm} \textcolor{gray} {Static Automated Perimetry with the SITA Stamdard Strategy}
+    | \footnotesize \vspace{0.05cm} \hspace{-8.3cm} \textcolor{gray} {Size III Stimulus \qquad \qquad \qquad \ \ SUNY-IU Classic NVs for 24-2}
+
+output:
+  pdf_document
+  
+# enable user to define sections of multiple columns with a lot of flexibility
+header-includes:
+  - \usepackage{multicol}
+  - \newcommand{\hideFromPandoc}[1]{#1}\hideFromPandoc{\let\Begin\begin\let\End\end}
+  - \setlength{\columnsep}{20pt}
+---
+
+<!-- \rule{\textwidth} draws a horizontal line that spans the textwidth -->
+\vspace{-1.4cm} \rule{\textwidth}{1pt}
+
+```{r setup, echo = FALSE}
+# install.packages("remotes")
+# library(remotes)
+# install_github("imarinfr/vf1/source")                       # install latest version of visualField package!
+# install.packages('RColorBrewer')
+library(RColorBrewer)
+library(visualFields)
+
+# install.packages('tinytex')                                 # install tinytex to generate pdf output;
+library(tinytex)                                              # tinytex is a lightweight LaTeX distribution
+     
+# read raw data into working directory
+full_d <- read.csv('data/power.csv')
+
+# load function to configure data set 
+source('code/vf_config.R')
+npx <- 30                                           # how many px?
+nrow <- 12                                          # how many rows per px series?           
+full_d <- vf_config(full_d, npx, nrow)
+```
+
+<!-- latex command to remove page number -->
+\pagenumbering{gobble}   
+
+\vspace{0.7cm} \Begin{multicols}{3}
+
+```{r echo=FALSE, fig.height=6, fig.width=7}
+# compute MDs from each visit for all px series
+all_md <- data.frame( px = rep(1:npx, each=nrow),
+                      md = getgl(full_d)$tmd )
+
+# function to compute MD range for a specified px series
+range <- function(data, px){
+                  a <- data[which(data$px == px),]
+                  max(a$md) - min(a$md)
+                  }
+
+# Compute and store MD range for every px series 
+md_range <- vector('numeric', npx)
+
+for(i in 1:npx){
+  md_range[i] <- range(data = all_md, px = i)
+ }
+
+# What is the maximum MD range? Use this as the model to set ylim for every px!
+model_range <- round(max(md_range) + 2, 
+               digits = 0)
+
+# isolate a px series (define 'px')
+d <- subset(full_d, id==px)
+
+# WHat are the MDs for this specific px that we are plotting?
+md <- all_md[which(all_md$px == px), 2]
+ylim <- round( 
+           c(mean(md) - model_range/2, 
+           mean(md) + model_range/2), 
+        digits = 0)
+
+par(mar = c(2, 2, 0, 1))
+
+plot(d$date, md,
+     bty = 'n',
+     xaxt = 'n',
+     yaxt = 'n',
+     xlab = '',
+     ylab = '',
+     ylim = ylim)
+
+# add a huge 'MD' in the backround
+text(mean(d$date),
+     mean(md),
+     labels = 'MD',
+     cex = 12,
+     col = 'gray96')
+
+# add OLSR line
+lm.model <- lm(md~date, data = d)
+slope <- summary(lm.model)$coefficients[2]
+
+if (slope < 0){
+  line_col <- 'red'
+   } else 
+     {line_col <- 'green'}
+
+abline(lm.model, lwd = 4, col = line_col)
+
+# replot points so they are not obscured by 'MD' and OLSR
+points(d$date, md,
+       pch = 19,
+       cex = 4,
+       col='maroon')
+
+# Configure X axis
+xaxis <- seq(min(d$date), max(d$date), length.out = 5)
+axis(side = 1,
+     tick = FALSE,
+     col.axis = 'gray56',
+     cex.axis = 1.8,
+     at = xaxis,
+     labels = format(xaxis, '%b %y') )
+
+# Configure Y axis
+yaxis <- seq(min(ylim), max(ylim), 1)
+par(las = 1)
+axis(side = 2,
+     tick = FALSE,
+     col.axis = 'gray56',
+     cex.axis = 2.2,
+     at = yaxis,
+     labels = yaxis )
+
+# add very faint horizontal ref lines
+abline(h = yaxis, col = 'gray95')
+```
+
+
+```{r echo=FALSE, fig.height=6, fig.width=7}
+# add sparkline plot
+vfplotsparklines(d, lwd = 3)
+```
+
+```{r include=FALSE}
+# compute PSD
+psd <- getgl(d)$psd
+```
+
+<!-- lines 152 - 162 are for show px details: MD, PSD, ID, AGE, FPR & FNR -->
+<!-- '\hfill' is used to push text to the document margins; \small makes text small; \scriptsize even smaller -->
+
+| \ \ \ \quad  \scriptsize \textbf {ID: \hfill \small `r px`}
+
+| \ \qquad  \scriptsize \textbf {AGE: \hfill \small `r round(mean(d$age), digits = 1)` \quad|\quad `r min(d$age)` to `r max(d$age)`}   
+
+| \ \qquad  \scriptsize \textbf {MD: \hfill \small `r round(mean(md), digits = 1)` \quad|\quad `r round(min(md), digits = 1)` to `r round(max(md), digits = 1)`}
+
+| \ \qquad  \scriptsize \textbf {PSD: \hfill \small `r round(mean(psd), digits = 1)` \quad|\quad `r round(min(psd), digits = 1)` to `r round(max(psd), digits = 1)`}
+
+| \ \qquad  \scriptsize \textbf {FPR:  \hfill \small `r round(mean(d$fpr), digits = 1)` \quad|\quad `r round(min(d$fpr), digits = 1)` to `r round(max(d$fpr), digits = 1)`}
+
+| \ \qquad  \scriptsize \textbf {FNR: \hfill \small `r round(mean(d$fnr), digits = 1)` \quad|\quad `r round(min(d$fnr), digits = 1)` to `r round(max(d$fnr), digits = 1)`}
+
+\End{multicols}
+
+
+\vspace{0.1cm}
+\hfill -----------------
+\vspace{0.1cm}
+
+<!-- lines 173 to 206 make grayscale plots (maximum 12 plots) and also a date column on the right-hand side -->
+
+```{r echo=FALSE, fig.width=35, fig.height=7}
+# Function to plot a row of 3 VF grayscale plots and a date column
+makerow <- function(first_vf, last_vf){
+           par(mfrow = c(1,4), xpd = TRUE)
+  
+           for(i in first_vf : last_vf){ vfplot(d[i,], 's') }
+  
+           plot.new()
+           
+           legend('right', 
+                  bty = 'n', 
+                  legend = format(d$date[first_vf : last_vf], '%d %b %Y'),
+                  cex = 6,
+                  y.intersp = 3,
+                  text.col = 'gray56')
+}
+
+makerow(first_vf = 1, last_vf = 3)
+```
+
+
+```{r echo=FALSE, fig.width=35, fig.height=7}
+makerow(first_vf = 4, last_vf = 6)
+```
+
+
+```{r echo=FALSE, fig.width=35, fig.height=7}
+makerow(first_vf = 7, last_vf = 9)
+```
+
+
+```{r echo=FALSE, fig.width=35, fig.height=7}
+makerow(first_vf = 10, last_vf = 12)
+```
+
+\vspace{0.3cm} \rule{\textwidth}{0.01pt}
+
+\hfill \footnotesize \textcolor{gray} {Printed: `r format(Sys.Date(), '%d %b %Y') `}
+
+
+
+

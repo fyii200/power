@@ -9,6 +9,7 @@ d <- d[,-1]
 d <- d[,c(1,9,5,6,8,7,12,13,14,15,17:70)]
 names(d)[c(2:10)] <- c('eye','date','time','age','type','fpr','fnr','fl','duration')
 d$date <- as.Date(d$date)
+d$id <- d$id - 4000
 
 # ## Sam's dataset
 # d <- read.csv('data/sam.csv')
