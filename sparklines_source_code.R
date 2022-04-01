@@ -43,15 +43,15 @@ vfsparklines <- function(vf, type = "td", thr = 2, width = 4,
   # plot the spark lines:  for left eyes, handling figure positions is incompatible
   # with swapping the min and max x limits in the plot. We need a patch here
   if(gpar$tess$xlim[1] < gpar$tess$xlim[2]) {
-    figs <- cbind(grconvertX( gpar$coord$x - width  / 2, from="user", to = "ndc"),
-                  grconvertX( gpar$coord$x + width  / 2, from="user", to = "ndc"),
-                  grconvertY( gpar$coord$y,              from="user", to = "ndc"),
-                  grconvertY( gpar$coord$y + height,     from="user", to = "ndc"))
+    figs <- cbind(grconvertX( gpar$coord$x - width  / 2, to = "ndc"),
+                  grconvertX( gpar$coord$x + width  / 2, to = "ndc"),
+                  grconvertY( gpar$coord$y,              to = "ndc"),
+                  grconvertY( gpar$coord$y + height,     to = "ndc"))
   } else {
-    figs <- cbind(grconvertX(gpar$coord$x + width  / 2, from="lines", to = "ndc"),
-                  grconvertX(gpar$coord$x - width  / 2, from="lines", to = "ndc"),
-                  grconvertY(gpar$coord$y,              from="lines", to = "ndc"),
-                  grconvertY(gpar$coord$y + height,     from="lines", to = "ndc"))
+    figs <- cbind(grconvertX(gpar$coord$x + width  / 2, to = "ndc"),
+                  grconvertX(gpar$coord$x - width  / 2, to = "ndc"),
+                  grconvertY(gpar$coord$y,              to = "ndc"),
+                  grconvertY(gpar$coord$y + height,     to = "ndc"))
   }
   
   
