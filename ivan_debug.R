@@ -1,6 +1,8 @@
 rm(list=ls())
 setwd('/Users/fabianyii/power')
 
+library("visualFields")
+
 d <- read.csv('data/power.csv')         
 d <- d[,-1]
 
