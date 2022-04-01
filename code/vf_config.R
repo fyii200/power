@@ -3,7 +3,7 @@
 
 vf_config <- function(data, npx, nrow){
   # include only relevant columns
-  data <- data[,c(2,10,6:7,9,8,13:16,18:71)]
+  data <- data[,c(1,9,5,6,8,7,12,13,14,15,17:70)]
   
   # change column names to what visualFields package recognises
   names(data)[c(2:10)] <- c('eye','date','time', 'age','type',

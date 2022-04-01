@@ -1,5 +1,5 @@
 rm(list=ls())
-setwd('/Users/fabianyii/Google Drive/power')
+setwd('/Users/fabianyii/power')
 
 # install.packages("remotes")
 library(remotes)
@@ -14,11 +14,11 @@ source('code/plot_indiv.R')                             # '' fit (15) individual
 source('code/plot_avg.R')                               # '' fit the average curve for each px
 
 # read raw data (power; n=12) into r
-d <- read.csv('data/n12.csv'); d <- d[,-1]
+d <- read.csv('data/n5.csv'); d <- d[,-1]
 
 # read visual field raw data into r & configuration
 vf <- read.csv('data/power.csv'); vf <- vf[,-1]
-vf <- vf_config(vf, id=1:30, each.px.length=12)                                                         
+vf <- vf_config(vf, npx=30, nrow=12)                                                         
 
 # 30 colour codes for 30 patients
 col <- c(brewer.pal(12, 'Paired'),brewer.pal(8, 'Dark2'),brewer.pal(8, 'Accent'),brewer.pal(8, 'Set2'))
