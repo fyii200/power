@@ -1,5 +1,5 @@
-plot_avg <- function(px, legend) {
-  a <- subset(pe, id==px)                                             # 'a' is a subset of 'pe' where id = 'px'
+plot_avg <- function(data, px, legend) {
+  a <- subset(data, id==px)                                              # 'a' is a subset of 'pe' where id = 'px'
   
   
   pow_avg <- data.frame(prog=unique(a$slope)*5/52,                   # empty data frame to record average power
@@ -12,8 +12,8 @@ plot_avg <- function(px, legend) {
   
   lines(pow_avg$prog, pow_avg$pow*100, lwd=4, col=col[px])
   
-  txt <- round( pow_avg$pow[ which(pow_avg$prog == 1.024) ]*100, digits=2)
-  abline(h=txt, v=1.024, lty=2)
+  txt <- round( pow_avg$pow[ which(pow_avg$prog == 1) ]*100, digits=2)
+  abline(h=txt, v=1, lty=2)
   legend('left', bty='n', paste0(txt, '%'), title='-1dB/y', text.col='gray', cex=1.2, lty=2, lwd=2.5)
   
   # fit_glm <- glm(pow~prog, family=binomial(link='logit'), data=pow_avg)      # logit model

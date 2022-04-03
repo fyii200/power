@@ -1,6 +1,8 @@
 rm(list=ls())
 setwd('/Users/fabianyii/power')
 
+# library(devtools)
+# install_github("imarinfr/vf1/source")
 library("visualFields")
 
 d <- read.csv('data/power.csv')         
@@ -12,5 +14,5 @@ names(d)[c(2:10)] <- c('eye','date','time','age','type','fpr','fnr','fl','durati
 d$date <- as.Date(d$date)
 d$id <- rep(1:30, each=12)     # make px id range from 1-30
 
-vflegoplot(d[1:12,], 's')
+vflegoplot(d[1:12,], 's', addSpark=TRUE)
 vfsparklines(d[1:12,], add=TRUE)
