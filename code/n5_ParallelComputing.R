@@ -36,7 +36,7 @@ dat <- data.frame(n=1:700, rate=unique(pe$slope) ,p=0)   # empty data frame to r
 num_series <- 5                                          # how many VFs to include in a series?
 set.seed(18143)
 
-for (i in 29:30) {
+for (i in c(13,30)) {
   
   a <- d[which(d$id==unique(d$id)[i]),]                       # "a" = subset where px id = 'i'
   
@@ -100,7 +100,8 @@ for (i in 29:30) {
       
     } }
   
-  plot_avg(i, legend='off')      # add average power curve
+  plot_avg(data=pe, i, legend='off')      # add average power curve
+  axis(2, cex.axis=1.6)
 }
 
 write.csv(pe, 'n5_power.csv')    # save result
