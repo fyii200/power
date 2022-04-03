@@ -36,7 +36,7 @@ dat <- data.frame(n=1:700, rate=unique(pe$slope) ,p=0)   # empty data frame to r
 num_series <- 5                                          # how many VFs to include in a series?
 set.seed(18143)
 
-for (i in 30) {
+for (i in 29:30) {
   
   a <- d[which(d$id==unique(d$id)[i]),]                       # "a" = subset where px id = 'i'
   

@@ -32,8 +32,7 @@ for(i in 30){
   empty_plot(data=vf, title=paste0('Px ', i))                                    # create empty plot
   plot_indiv(data=d, px=i)                                                       # fit all individual curves for 'i'th px
   plot_avg(data=d, px=i, legend='on')                                            # fit the average curve for the 'i'th px
-  axis(2,cex.axis=1.6)
-  par(cex.lab=2)
+  axis(2, cex.axis=1.6)
 }
 dev.off()
 ###################################### Done #################################################

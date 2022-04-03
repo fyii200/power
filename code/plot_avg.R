@@ -14,7 +14,7 @@ plot_avg <- function(data, px, legend) {
   
   txt <- round( pow_avg$pow[ which(pow_avg$prog == 1) ]*100, digits=2)
   abline(h=txt, v=1, lty=2)
-  legend('left', bty='n', paste0(txt, '%'), title='-1dB/y', text.col='gray', cex=1.6, lty=2, lwd=2.5)
+  legend('right', bty='n', paste0(txt, '%'), title='-1dB/y', text.col='gray', cex=1.6, lty=2, lwd=2.5)
   
   # fit_glm <- glm(pow~prog, family=binomial(link='logit'), data=pow_avg)      # logit model
   # 
