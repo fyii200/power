@@ -16,7 +16,7 @@ source('code/plot_avg.R')                               # '' fit the average cur
 source('code/plot_grayscale_sparklines.R')              # grayscale with sparklines
 
 # read raw data (power; n=12) into r
-d <- read.csv('n5_power.csv'); d <- d[,-1]
+d <- read.csv('data/n5_power.csv'); d <- d[,-1]
 
 # read visual field raw data into r & configuration
 vf <- read.csv('data/power.csv'); vf <- vf[,-1]
@@ -28,8 +28,8 @@ col <- c(brewer.pal(12, 'Paired'),brewer.pal(8, 'Dark2'),brewer.pal(8, 'Accent')
 
 ############# Power vs Progression Signal for each patient (in separate plots) ##############
 pdf(file='plots/plot_indiv.pdf', width=6, height=6)
-for(i in 30){ 
-  empty_plot(data=vf, title='')                                    # create empty plot
+for(i in 1:30){ 
+  empty_plot(data=vf, title=paste0('Px', i))                                    # create empty plot
   plot_indiv(data=d, px=i)                                                       # fit all individual curves for 'i'th px
   plot_avg(data=d, px=i, legend='on')                                            # fit the average curve for the 'i'th px
   axis(2, cex.axis=1.6)
@@ -40,8 +40,8 @@ dev.off()
 ################################ Grayscale with sparklines ##################################
 pdf(file='plots/grayscale_sparklines_px.pdf', width=6, height=6)
 num_VF <- 5 # number of VFs per series
-lwd <- 2.5 # sparkline width
-for(i in 30){ 
+lwd <- 2.5  # sparkline width
+for(i in 1:30){ 
   VF_series <- subset(vf, id==i)[1:num_VF,]   # extract 'num_VF' VFs from px i's VF series
   mean_series <- vfmean(VF_series, by='eye') # mean of 'num_VF' VFs
   grayscale_sparklines(vf=mean_series, vf_series=VF_series, 's', cex=0.01, lwd=lwd) 

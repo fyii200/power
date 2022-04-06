@@ -7,7 +7,7 @@ library(usethis)
 library(doParallel)                     # package for parallelisation
 registerDoParallel(8)                   # set number of cores to 8 (8 on my mac)
 
-d <- read.csv('data/power.csv')         # read the "stamps" data
+d <- read.csv('data/artes2014.csv')         # read the "stamps" data
 d <- d[,-1]
 
 # install.packages("devtools")
@@ -36,11 +36,11 @@ dat <- data.frame(n=1:700, rate=unique(pe$slope) ,p=0)   # empty data frame to r
 num_series <- 5                                          # how many VFs to include in a series?
 set.seed(18143)
 
-for (i in c(13,30)) {
+for (i in 1:30) {
   
-  a <- d[which(d$id==unique(d$id)[i]),]                       # "a" = subset where px id = 'i'
+  a <- d[which(d$id==unique(d$id)[i]),]                                    # "a" = subset where px id = 'i'
   
-  if(mean(apply(a[,-c(1:10,36,45)],2,mean) > 10)*52 > 8){     # check that there are >8 test locations with mean sensitivity (across 12 tests) > 10dB 
+  if(mean(apply(a[1:num_series, -c(1:10,36,45)],2,mean) > 10)*52 > 8){     # check that there are >8 test locations with mean sensitivity (across 5 tests) > 10dB 
     
     #Empty plot for each px (Power vs Progression Signal; log scale for x-axis)
     empty_plot(title=paste0('Px ', unique(pe$id)[i]) )
@@ -50,7 +50,7 @@ for (i in c(13,30)) {
     for(k in 1:15) {
       
       # mean sensitivity across 12 tests at each location (except blind spot)
-      col <- apply(a[,-c(1:10,36,45)],2,mean)
+      col <- apply(a[1:num_series, -c(1:10,36,45)], 2, mean)
       
       # which columns (test locations) with mean sensitivity > 10dB?
       clm <- as.numeric(str_replace_all(rownames(cbind(col[which(as.numeric(col > 10) == 1)])), 'L','')) +10
@@ -85,7 +85,7 @@ for (i in c(13,30)) {
             poplr(prog)$cslp  # run PoPLR on the modified series to return p-val
           }
         
-        print(paste0('Px',i ,': ' ,k,' out of 15 iterations: ',o,' run(s) completed!'))  # 'live' report on progress in console 
+        # print(paste0('Px',i ,': ' ,k,' out of 15 iterations: ',o,' run(s) completed!'))  # 'live' report on progress in console 
       }
       
       # compute power (proportion of p<0.05) and record in 'plot_res'
@@ -98,13 +98,15 @@ for (i in c(13,30)) {
       x <- MD_slope
       lines(x ,plot_res$pow*100, col='gray' )
       
+      print(paste0('Px',i ,': ' ,k,' out of 15 iterations completed!'))  # 'live' report on progress in console   
+      
     } }
   
   plot_avg(data=pe, i, legend='off')      # add average power curve
   axis(2, cex.axis=1.6)
 }
 
-write.csv(pe, 'n5_power.csv')    # save result
+write.csv(pe, 'result/n5_power.csv')    # save result
 
 
 
