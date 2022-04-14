@@ -44,5 +44,5 @@ names(conf_d)[11:64] <- sens
 # include eye information in id, e.g. change id '647' to '647_OD'
 conf_d$id <- paste0(conf_d$id, '_', conf_d$eye)
 
-write.csv(conf_d, 'data/conf_all_VF.csv') # write configured VF data to 'data/config_uwvf'
+write.csv(conf_d, 'data/conf_uwvf.csv') # write configured VF data to 'data/config_uwvf'
 

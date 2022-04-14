@@ -16,7 +16,7 @@ source('code/plot_avg.R')                               # '' fit the average cur
 source('code/plot_grayscale_sparklines.R')              # grayscale with sparklines
 
 # read raw data (power; n=12) into r
-d <- read.csv('data/n5_power.csv'); d <- d[,-1]
+d <- read.csv('result/try_n5_power.csv'); d <- d[,-1]
 
 # read visual field raw data into r & configuration
 vf <- read.csv('data/power.csv'); vf <- vf[,-1]
@@ -27,7 +27,7 @@ col <- c(brewer.pal(12, 'Paired'),brewer.pal(8, 'Dark2'),brewer.pal(8, 'Accent')
 
 
 ############# Power vs Progression Signal for each patient (in separate plots) ##############
-pdf(file='plots/plot_indiv.pdf', width=6, height=6)
+pdf(file='plots/try_plot_indiv.pdf', width=6, height=6)
 for(i in 1:30){ 
   empty_plot(data=vf, title=paste0('Px', i))                                    # create empty plot
   plot_indiv(data=d, px=i)                                                       # fit all individual curves for 'i'th px

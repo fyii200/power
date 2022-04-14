@@ -1,5 +1,5 @@
 plot_avg <- function(data, px, legend) {
-  a <- subset(data, id==px)                                              # 'a' is a subset of 'pe' where id = 'px'
+  a <- subset(data, id==px)                                          # 'a' is a subset of 'pe' where id = 'px'
   
   
   pow_avg <- data.frame(prog=unique(a$slope)*5/52,                   # empty data frame to record average power
@@ -10,7 +10,7 @@ plot_avg <- function(data, px, legend) {
   pow_avg$pow[i] <- mean(subset(a, slope == unique(a$slope)[i])$pow) 
   }
   
-  lines(pow_avg$prog, pow_avg$pow*100, lwd=4, col=col[px])
+  lines(pow_avg$prog, pow_avg$pow*100, lwd=4, col='maroon')
   
   txt <- round( pow_avg$pow[ which(pow_avg$prog == 1) ]*100, digits=2)
   abline(h=txt, v=1, lty=2)
