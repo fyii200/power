@@ -22,7 +22,7 @@ source('code/power_analysis.R')         # power analysis (takes configured VF da
 #################### Power analysis on Artes2014 VF data ######################
 # Read VF data
 d <- read.csv('data/artes2014.csv'); d <- d[,-1]
-#configure the dataset to meet visualFields data structure requirements
+#configure the dataset to meet 'visualFields' data structure requirements
 d <- d[,c(1,9,5,6,8,7,12,13,14,15,17:70)]
 names(d)[c(2:10)] <- c('eye','date','time','age','type','fpr','fnr','fl','duration')
 d$date <- as.Date(d$date)
