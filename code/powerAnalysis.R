@@ -37,9 +37,9 @@
 #' analyses of pointwise linear regression (PoPLR)}. Investigative Ophthalmology
 #' and Visual Science, 53, 2012
 #' @examples
-#'
-#'
-#'
+#' artesVf <- vfConfig(data='artes', artesVf) # configure artesVF
+#' vf <- subset(artesVf, id==1) # select patient 1's series of VFs
+#' powerResult <- powerAnalysis(vf) # run power analysis on this series and save result (data frame) as 'powerResult'
 #'@param vf A data frame storing pertinent data from a series of visual fields at individual- and eye-level. Structure 
 #'  must conform to R \code{visualFields} package's requirements.
 #'
@@ -116,7 +116,9 @@ powerAnalysis <- function(vf,
 ###################################################################
 # INTERNAL FUNCTIONS
 ###################################################################
-# Internal function:
+# Internal function: creates and return an empty data frame to store pertinent
+#   information and result of power analysis (power expressed as percentage) for a
+#   given visual field series. Column names explained in detail under @return tag.
 #' @noRd
 createEmptyDataframe <- function(vfSeries, nPowerCurves, mdRates){
   firstDate           <- head(vfSeries$date,1)
@@ -139,7 +141,8 @@ createEmptyDataframe <- function(vfSeries, nPowerCurves, mdRates){
   
   return(powerResult) }
 
-# Internal function:
+# Internal function: takes a specific visual field series as input and fixes the
+#   test intervals to 6 months. Return the altered series.
 #' @noRd
 fixToSixMonths <- function(vfSeries){
   seriesLength <- nrow(vfSeries)
@@ -147,7 +150,10 @@ fixToSixMonths <- function(vfSeries){
   
   return(vfSeries) }
 
-# Internal function: check that there are >8 test locations with mean sensitivity (across first 5 tests) > 10dB. 
+# Internal function: takes a particular visual field series as input and checks 
+#   if there are more than 8 test locations with a mean sensitivity (across the entire 
+#   series) of greater than 10dB. Return a boolean: `TRUE` if the series meets this
+#   criterion and `FALSE` otherwise.
 #' @noRd
 seriesIsEligible <- function(vfSeries){
   nrow(vf) >= 5
@@ -159,7 +165,8 @@ seriesIsEligible <- function(vfSeries){
   return(nEligibleLocations > 8) }
 
 
-# Internal function: which columns of the full Vf data frame have mean sensitivity > 10dB?
+# Internal function: which locations (columns) have a mean sensitivity (across
+#   series) of at least 10dB?
 #' @noRd
 eligibleColumns <- function(vfSeries){
   vfLocations           <- vfSeries[, -c(1:10,36,45)]
@@ -172,7 +179,8 @@ eligibleColumns <- function(vfSeries){
   return(eligibleColumns) }
 
 
-# Internal function: compute cumulative test intervals (in years).
+# Internal function: given a visual field series, return a numeric vector storing
+#   its cumulative test intervals in years.
 #' @noRd
 cumulativeIntervals <- function(vfSeries){
   yearIntervals <- c(0)
@@ -184,7 +192,10 @@ cumulativeIntervals <- function(vfSeries){
   
   return(cumulativeIntervals) }
   
-# Internal function:
+# Internal function: takes a series and randomly reorder it by sampling the
+#   series without replacement the same number of times as the number of tests
+#   in that series. Returns the reordered series with the original sequence
+#   of test dates preserved.
 #' @noRd
 reorderSeries <- function(vfSeries){
   originalDates        <- vfSeries$date
@@ -193,7 +204,9 @@ reorderSeries <- function(vfSeries){
   
   return(reorderedSeries) }
 
-# Internal function: inject progression signal of a particular magnitude (7 in total).
+# Internal function: modifies a reordered series by introducing progression signal 
+#   of a specific magnitude as defined by 'pointwiseRate' to five randomly sampled
+#   locations (columns) as defined by 'fiveVFLocations'. Returns the modified series.
 #' @noRd
 modifySeries <- function(reorderedSeries, pointwiseRate, fiveVFLocations){
   modifiedSeries      <- reorderedSeries
@@ -204,14 +217,24 @@ modifySeries <- function(reorderedSeries, pointwiseRate, fiveVFLocations){
   
   return(modifiedSeries) }
 
-# Internal function:
+# Internal function: modify a reordered series by introducing a progression signal
+#   of a particular magnitude to 5 randomly sampled locations before performing PoPLR
+#   on the modified series which returns a p-value. This is repeated for other rates 
+#   of progression, yielding as many p-values as there are rates of progression (7
+#   by default). These steps are defined as one power run. Returns a numeric vector
+#   of p-values, with each corresponding to a specific rate of progression.
 #' @noRd
 onePowerRun <- function(reorderedSeries, pointwiseRates, fiveVFLocations){
-  foreach (i = 1:7, .combine='c') %dopar%                                                           
+  foreach (i = 1:length(pointwiseRates), .combine='c') %dopar%                                                           
     modifiedSeries <- modifySeries(reorderedSeries, pointwiseRates[i], fiveVFLocations)
     poplr(modifiedSeries)$cslp }
 
-# Internal function:
+# Internal function: takes a numeric vector of p-values generated after running
+#   the internal function 'onePowerRun' as many times as that defined by 
+#   'nPermutationsPerCurve' (default is 100) and returns a numeric vector of power
+#   estimates (%). Each power estimate in the vector corresponds to a specific rate 
+#   of progression and is derived from the proportion of statistically significant 
+#   PoPLR results (p<0.05) at that rate of progression.
 #' @noRd
 computePowers <- function(pValues){
   powers <- c()
@@ -222,7 +245,12 @@ computePowers <- function(pValues){
   
   return(powers) }
 
-# Internal function:
+# Internal function: takes a filled data frame 'powerResult' generated after running 
+# 'powerAnalysis' on a specific visual field series and plots the individual power
+# curves (15 by default) plus their average, i.e. power(%) vs MD rates of progression
+# (dB/year). The average power associated with a -1dB/year rate of progression is also
+# shown on the plot. Plot will be saved to 'savePlotPath' if 'savePlot' is TRUE; otherwise,
+# plot is displayed in the Plots pane.
 #' @noRd
 plotPowerCurves <- function(powerResult, id, mdRates, savePlot, savePlotPath){
   if(savePlot) pdf(file   = file.path(savePlotPath, paste0(id,'_','powerCurves')), 
