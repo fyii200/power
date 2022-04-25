@@ -10,39 +10,40 @@ setwd('/Users/fabianyii/power/')
 library("lubridate")
 
 # Read original VF data
-d <- read.csv('data/raw_uwvf.csv')
+vf <- read.csv('data/raw_uwvf.csv')
 
 ########## columns must be ordered as follows: id, eye,           ##########
-########## date, time, age, type, fpr, fnr, fl, l1...l54          ##########
-conf_d <- data.frame(id = 1:nrow(d))
-conf_d$id <- d$PatID
-conf_d$eye <- d$Eye
+########## date, time, age, type, fpr, fnr, fl, L1...L54          ##########
+confVf <- data.frame(id = 1:nrow(vf))
+confVf$id <- vf$PatID
+confVf$eye <- vf$Eye
 
-OD_ind = which(conf_d$eye == 'Right'); OS_ind = which(conf_d$eye == 'Left')
-conf_d$eye[OD_ind] <- 'OD'; conf_d$eye[OS_ind] <- 'OS'
+rightEyeRows = which(vf$eye == 'Right') 
+leftEyeRows = which(vf$eye == 'Left')
+confVf$eye[rightEyeRows] <- 'OD' 
+confVf$eye[leftEyeRows] <- 'OS'
 
 # First VF test assumed to be taken on 01/01/2000
-conf_d$date <- as.Date(d$Time_from_Baseline, origin = '2000-01-01')
-conf_d$date <- conf_d$date %m+% months( round(d$Time_from_Baseline*12) )
+confVf$date <- as.Date(vf$Time_from_Baseline, origin = '2000-01-01')
+confVf$date <- conf_d$date %m+% months( round(vf$Time_from_Baseline*12) )
 
-conf_d$time <- 0
-conf_d$age <- d$Age
-conf_d$type <- 'unknown'
-conf_d$fpr <- 0
-conf_d$fnr <- 0
-conf_d$fl <- 0
-conf_d$duration <- 0
-conf_d <- cbind(conf_d, d[,23:76])
+confVf$time <- 0
+confVf$age <- vf$Age
+confVf$type <- 'unknown'
+confVf$fpr <- 0
+confVf$fnr <- 0
+confVf$fl <- 0
+confVf$duration <- 0
+confVf <- cbind(confVf, vf[,23:76])
 
-sens <- c()
+thresholds <- c()
 for (i in 1:54){
-  sens = c(sens, paste('l', i, sep=''))
-}
+  thresholds = c(thresholds, paste('L', i, sep='')) }
 
-names(conf_d)[11:64] <- sens
+names(confVf)[11:64] <- thresholds
 
 # include eye information in id, e.g. change id '647' to '647_OD'
-conf_d$id <- paste0(conf_d$id, '_', conf_d$eye)
+confVf$id <- paste0(confVf$id, '_', confVf$eye)
 
-write.csv(conf_d, 'data/conf_uwvf.csv') # write configured VF data to 'data/config_uwvf'
+write.csv(confVf, 'data/confUwvf.csv') 
 
