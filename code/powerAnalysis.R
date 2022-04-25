@@ -9,29 +9,29 @@
 #'   times, the power to detect progression in the series concerned can be estimated as
 #'   the proportion of statistically significant results (p<0.05).
 #' @return `powerAnalysis` returns the following
-#'\itemize{
-#'  \item A data frame which consists of the following columns.
-#'    \item\code{id} A character string representing patient ID.
-#'    \item\code{eye} A character string representing patient's eye.
-#'    \item\code{meanAge} A numeric scalar representing the average age across the visual field series
-#'      used in the analysis.
-#'    \item\code{meanMD} A numeric scalar representing the average mean deviation across the visual
-#'      field series used in the analysis.
-#'    \item\code{originalSeriesPoplr} A numeric scalar representing the p-value for the left-tailed permutation 
-#'      test (i.e. concerned with deterioration) when analyzing the original (i.e. non-permuted) series with PoPLR. 
-#'    \item\code{powerCurve} An integer scalar representing the index of power curves. Each power curve describes 
-#'      the power estimates across a range of progression signals.
-#'    \item\code{mdRates} A numeric scalar specifying the magnitude of progression signal, expressed as mean deviation. 
-#'    \item\code{power} A numeric scalar representing the power estimate for a given magnitude of progression signal, 
-#'      expressed as percentage.
-#'    \item\code{dateRangeInMonths} An integer scalar representing the date range in months during which the first
-#'      and final visual field tests are taken, or assumed to be taken if the argument \code{fixedInterval} is set 
-#'      to \code{true}.
-#'  \item A plot depicting the power estimates across the full range of progression magnitudes in mean deviation 
-#'    terms. Saved in the default subdirectory \code{plots} if \code{savePlot} is set to \code{TRUE}, otherwise 
-#'    displayed inside the Plots pane.
+#' \itemize{
+#'   \item A data frame which consists of the following columns.
+#'     \item\code{id} A character string representing patient ID.
+#'     \item\code{eye} A character string representing patient's eye.
+#'     \item\code{meanAge} A numeric scalar representing the average age across the visual field series
+#'       used in the analysis.
+#'     \item\code{meanMD} A numeric scalar representing the average mean deviation across the visual
+#'       field series used in the analysis.
+#'     \item\code{originalSeriesPoplr} A numeric scalar representing the p-value for the left-tailed permutation 
+#'       test (i.e. concerned with deterioration) when analyzing the original (i.e. non-permuted) series with PoPLR. 
+#'     \item\code{powerCurve} An integer scalar representing the index of power curves. Each power curve describes 
+#'       the power estimates across a range of progression signals.
+#'     \item\code{mdRates} A numeric scalar specifying the magnitude of progression signal, expressed as mean deviation. 
+#'     \item\code{dateRangeInMonths} An integer scalar representing the date range in months during which the first
+#'       and final visual field tests are taken, or assumed to be taken if the argument \code{fixedInterval} is set 
+#'       to \code{true}.
+#'     \item\code{power} A numeric scalar representing the power estimate for a given magnitude of progression signal, 
+#'       expressed as percentage.
+#'   \item A plot depicting the power estimates across the full range of progression magnitudes in mean deviation 
+#'     terms. Saved in the default subdirectory \code{plots} if \code{savePlot} is set to \code{TRUE}, otherwise 
+#'     displayed inside the Plots pane.
 #'}
-#'@references
+#' @references
 #' N. O'Leary, B. C. Chauhan, and P. H. Artes. \emph{Visual field progression in
 #' glaucoma: estimating the overall significance of deterioration with permutation
 #' analyses of pointwise linear regression (PoPLR)}. Investigative Ophthalmology
@@ -40,39 +40,31 @@
 #' artesVf <- vfConfig(data='artes', artesVf) # configure artesVF
 #' vf <- subset(artesVf, id==1) # select patient 1's series of VFs
 #' powerResult <- powerAnalysis(vf) # run power analysis on this series and save result (data frame) as 'powerResult'
-#'@param vf A data frame storing pertinent data from a series of visual fields at individual- and eye-level. Structure 
-#'  must conform to R \code{visualFields} package's requirements.
-#'
-#'@param useNumCores An integer scalar representing the number of CPU cores to be used for parallel execution using 
-#'  R \code{doParallel} package. All available cores are used by default, determined using the \code{detectCores} function.
-#'
-#'@param mdRates A numeric vector specifying the magnitudes of progression signals expressed in mean deviation terms. c(-0.05,
-#'  -0.10, -0.20, -0.50, -1.00, -2.00, -4.00) dB/year is used by default, which corresponds to c(-0.52, -1.04, -2.08, -5.20, 
-#'  -10.40, -20.80, -41.60) dB/year in pointwise terms, i.e. pointwise progression = \code{mdRates}*52/5.  
-#'
-#'@param nSeries An integer scalar specifying the first \code{n} visual field tests to be analyzed in each series. Default is 5.
-#'
-#'@param fixedInterval A logical scalar. If set to \code{TRUE}, test intervals are fixed at 6 months. Hence, assuming the
-#'  default \code{nSeries}=5 setting, the first and last tests span 24 months which gives rise to, say, a progression signal 
-#'  of -2dB for a progression rate of -1dB/year. If set to \code{FALSE}, the actual test intervals are used. Default is \code{TRUE}.
-#'
-#'@param nPowerCurves An integer scalar specifying the number of power curves one desires. Each power curve depicts the power
-#'  estimates across a pre-defined range of progression magnitudes (n=7 if the default \code{mdRates} is used) introduced to 
-#'  **a specific set of 5 randomly sampled visual field locations** (excluding blind-spot locations). Hence, a different power
-#'  curve corresponds to a different set of modified visual field locations. Default is 15.
-#'
-#'@param nPermutationsPerCurve An integer scalar specifying the number of times a given series is randomly permuted aka reordered
-#'  before being modified by adding progression signals for each power curve. As PoPLR is performed each time a series is reordered
-#'  and modified, \code{nPermutationsPerCurve} corresponds to the number of p-values generated for each progression magnitude, and
-#'  the proportion of which is a measure of power at that given magnitude. Note that the maximum number of permutations is 120 (5!)
-#'  using the default \code{nSeries}=5, which should smaller than \code{nPermutationsPerCurve}. Default is 100.
-#'
-#'@param savePlot A logical scalar. If set to \code{TRUE}, a PDF of the plot depicting power(%) vs rates of progression(dB/year) 
-#'  will be saved to \code{savePlotPath}. If \code{FALSE}, the plot will instead be displayed in the Plots pane. Default is TRUE.
-#'
-#'@param savePlotPath Path specifying where the plot depicting the power curves for a given series should be saved to. Default 
-#'  is a relative path called 'plots'.
-#'@export
+#' @param vf A data frame storing pertinent data from a series of visual fields at individual- and eye-level. Structure 
+#'   must conform to R \code{visualFields} package's requirements.
+#' @param useNumCores An integer scalar representing the number of CPU cores to be used for parallel execution using 
+#'   R \code{doParallel} package. All available cores are used by default, determined using the \code{detectCores} function.
+#' @param mdRates A numeric vector specifying the magnitudes of progression signals expressed in mean deviation terms. c(-0.05,
+#'   -0.10, -0.20, -0.50, -1.00, -2.00, -4.00) dB/year is used by default, which corresponds to c(-0.52, -1.04, -2.08, -5.20, 
+#'   -10.40, -20.80, -41.60) dB/year in pointwise terms, i.e. pointwise progression = \code{mdRates}*52/5.  
+#' @param nSeries An integer scalar specifying the first \code{n} visual field tests to be analyzed in each series. Default is 5.
+#' @param fixedInterval A logical scalar. If set to \code{TRUE}, test intervals are fixed at 6 months. Hence, assuming the
+#'   default \code{nSeries}=5 setting, the first and last tests span 24 months which gives rise to, say, a progression signal 
+#'   of -2dB for a progression rate of -1dB/year. If set to \code{FALSE}, the actual test intervals are used. Default is \code{TRUE}.
+#' @param nPowerCurves An integer scalar specifying the number of power curves one desires. Each power curve depicts the power
+#'   estimates across a pre-defined range of progression magnitudes (n=7 if the default \code{mdRates} is used) introduced to 
+#'   **a specific set of 5 randomly sampled visual field locations** (excluding blind-spot locations). Hence, a different power
+#'   curve corresponds to a different set of modified visual field locations. Default is 15.
+#' @param nPermutationsPerCurve An integer scalar specifying the number of times a given series is randomly permuted aka reordered
+#'   before being modified by adding progression signals for each power curve. As PoPLR is performed each time a series is reordered
+#'   and modified, \code{nPermutationsPerCurve} corresponds to the number of p-values generated for each progression magnitude, and
+#'   the proportion of which is a measure of power at that given magnitude. Note that the maximum number of permutations is 120 (5!)
+#'   using the default \code{nSeries}=5, which should smaller than \code{nPermutationsPerCurve}. Default is 100.
+#' @param savePlot A logical scalar. If set to \code{TRUE}, a PDF of the plot depicting power(%) vs rates of progression(dB/year) 
+#'   will be saved to \code{savePlotPath}. If \code{FALSE}, the plot will instead be displayed in the Plots pane. Default is TRUE.
+#' @param savePlotPath Path specifying where the plot depicting the power curves for a given series should be saved to. Default 
+#'   is a relative path called 'plots'.
+#' @export
 powerAnalysis <- function(vf, 
                           useNumCores            = detectCores(),
                           mdRates                = c(0.05, 0.1, 0.2, 0.5, 1, 2, 4),
@@ -83,13 +75,17 @@ powerAnalysis <- function(vf,
                           savePlot               = TRUE,
                           savePlotPath           = 'plots'){
   
-  registerDoParallel(cores=nCores)
+  registerDoParallel(cores=useNumCores)
+  pb <- txtProgressBar(min=0, max=nPowerCurves, style=3, width=50, char='=') # progress bar
   
   pointwiseRates <- mdRates*52/5
   
-  if(nrow(vf)>4 & seriesIsEligible(vfSeries) )
+  if(nrow(vf) < nSeries) stop(paste0('Input VF series needs to be at least as long as ',nSeries))
+  
+  vfSeries <- vf[1:nSeries, ]
+  
+  if(seriesIsEligible(vfSeries))
     
-    vfSeries <- vf[1:nSeries, ]
     powerResult <- createEmptyDataframe(vfSeries, nPowerCurves, mdRates)
     if(fixedInterval) vfSeries <- fixToSixMonths(vfSeries) 
     
@@ -108,8 +104,11 @@ powerAnalysis <- function(vf,
       powers <- computePowers(pValues)
       
       powerCurveRows <- which(powerResult$powerCurve == powerCurve)
-      powerResult[powerCurveRows, ]$power <- powers }
+      powerResult[powerCurveRows, ]$power <- powers 
+      
+      setTxtProgressBar(pb, powerCurve) } # sets the progress bar to the current state
   
+  close(pb) # close the connection  
   plotPowerCurves(powerResult, unique(vf$id), mdRates, savePlot, savePlotPath)
   return(powerResult) }
 
@@ -127,7 +126,7 @@ createEmptyDataframe <- function(vfSeries, nPowerCurves, mdRates){
   dateRangeInMonths   <- round(as.double(dateRangeInDays/30), 2)
   totalDeviations     <- gettd(vfSeries)[,11:64]
   meanMD              <- mean(as.matrix(totalDeviations), na.rm=TRUE)
-  originalSeriesPoplr <- round(poplr(vfSeries)$cslp,2)
+  originalSeriesPoplr <- suppressWarnings( round(poplr(vfSeries)$cslp,2) )
   
   powerResult <- data.frame('id'                 = unique(vfSeries$id),
                             'eye'                = unique(vfSeries$eye),
@@ -135,9 +134,9 @@ createEmptyDataframe <- function(vfSeries, nPowerCurves, mdRates){
                             'meanMD'             = round(meanMD, 2),
                             'originalSeriesPoplr'= originalSeriesPoplr,
                             'powerCurve'         = rep(1:nPowerCurves, each=length(mdRates)), 
-                            'mdRates'            = mdRates, 
-                            'power'              = NA,
-                            'dateRangeInMonths'  = dateRangeInMonths)
+                            'mdRates'            = mdRates,
+                            'dateRangeInMonths'  = dateRangeInMonths,
+                            'power'              = NA)
   
   return(powerResult) }
 
@@ -225,9 +224,9 @@ modifySeries <- function(reorderedSeries, pointwiseRate, fiveVFLocations){
 #   of p-values, with each corresponding to a specific rate of progression.
 #' @noRd
 onePowerRun <- function(reorderedSeries, pointwiseRates, fiveVFLocations){
-  foreach (i = 1:length(pointwiseRates), .combine='c') %dopar%                                                           
+  foreach (i = 1:length(pointwiseRates), .combine='c') %dopar% {                                                          
     modifiedSeries <- modifySeries(reorderedSeries, pointwiseRates[i], fiveVFLocations)
-    poplr(modifiedSeries)$cslp }
+    suppressWarnings(poplr(modifiedSeries)$cslp) } }
 
 # Internal function: takes a numeric vector of p-values generated after running
 #   the internal function 'onePowerRun' as many times as that defined by 
@@ -257,7 +256,7 @@ plotPowerCurves <- function(powerResult, id, mdRates, savePlot, savePlotPath){
                    width  = 6, 
                    height = 6)
   par(las=1)
-  plot(x        = 0, 
+  plot(x        = 0.1, 
        y        = 0, 
        bty      = 'n', 
        pch      = 19, 
@@ -294,10 +293,6 @@ plotPowerCurves <- function(powerResult, id, mdRates, savePlot, savePlotPath){
   abline(h=txt, v=1, lty=2)
   legend('topleft', bty='n', paste0(txt, '%'), title='-1dB/y', text.col='gray', lty=2, lwd=2) 
   dev.off() }
-
-
-
-
 
 
 
