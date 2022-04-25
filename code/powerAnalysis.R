@@ -113,9 +113,9 @@ powerAnalysis <- function(vf,
   plotPowerCurves(powerResult, unique(vf$id), mdRates, savePlot, savePlotPath)
   return(powerResult) }
 
-###################################################################
+###################################################################################
 # INTERNAL FUNCTIONS
-###################################################################
+###################################################################################
 # Internal function: creates and return an empty data frame to store pertinent
 #   information and result of power analysis (power expressed as percentage) for a
 #   given visual field series. Column names explained in detail under @return tag.
