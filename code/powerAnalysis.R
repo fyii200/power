@@ -163,7 +163,6 @@ seriesIsEligible <- function(vfSeries){
   
   return(nEligibleLocations > 8) }
 
-
 # Internal function: which locations (columns) have a mean sensitivity (across
 #   series) of at least 10dB?
 #' @noRd
@@ -176,7 +175,6 @@ eligibleColumns <- function(vfSeries){
   eligibleColumns       <- eligibleLocations + 10
   
   return(eligibleColumns) }
-
 
 # Internal function: given a visual field series, return a numeric vector storing
 #   its cumulative test intervals in years.
