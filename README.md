@@ -1,7 +1,7 @@
 # Power Analysis 
 
 ### Introduction
-*Given a series of visual fields, how likely are we to detect change if meaningful change of a particular magnitude has taken place?* 
+*Given a series of visual fields, how can we predict the power of a progression analysis in detecting change?* 
 
 We propose an approach based on Monte-carlo simulation, where we introduce artificial 'progression signals' of varying magnitudes to randomly selected visual field (VF) locations. The modified series is then analysed with Permutation of Pointwise Linear Regression (PoPLR) which generates a p-value, i.e. statistically significant change if p<0.05. This is repeated 100 times and the proportion of statistically significant iterations is taken as the statistical power of the progression analysis to detect change of a particular magnitude.  
 
